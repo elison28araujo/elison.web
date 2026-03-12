@@ -20,7 +20,7 @@ const PROFILE = {
   slug: 'elisons.araujo',
   bio: '💻 Criação de Sites Profissionais\n🚀 Link profissional para Instagram\n⚙️ Sistemas e automações para empresas',
   avatar_url: 'https://picsum.photos/seed/elison-premium/400/400',
-  background_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop',
+  background_url: 'https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?q=80&w=1920&auto=format&fit=crop',
   instagram: 'https://www.instagram.com/elisons.araujo',
 };
 
@@ -146,35 +146,36 @@ export default function BioPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black font-sans overflow-x-hidden relative">
-      {/* Background with subtle gradient and blur */}
+    <main className="min-h-screen bg-[#020205] text-white selection:bg-blue-500 selection:text-white font-sans overflow-x-hidden relative">
+      {/* Background with immersive tech feel */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020205]/90 via-[#020205]/40 to-[#020205] z-10" />
         <Image
           src={PROFILE.background_url}
           alt="Background"
           fill
-          className="object-cover opacity-40 scale-110 blur-[2px]"
+          className="object-cover opacity-30 scale-105"
           priority
           referrerPolicy="no-referrer"
         />
-        {/* Animated ambient light */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px] animate-pulse" />
+        {/* Immersive Glows */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px]" />
       </div>
 
-      <div className="relative z-10 max-w-xl mx-auto px-6 pt-16 pb-24 flex flex-col items-center">
+      <div className="relative z-10 max-w-xl mx-auto px-6 pt-20 pb-24 flex flex-col items-center">
         {/* Profile Section */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center text-center space-y-8 mb-16"
+          className="flex flex-col items-center text-center space-y-8 mb-12 w-full"
         >
           <div className="relative group">
-            <div className="absolute -inset-2 bg-gradient-to-r from-white/20 to-white/5 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition duration-1000" />
-            <div className="relative w-36 h-36 rounded-full p-[2px] bg-gradient-to-b from-white/20 to-transparent">
-              <div className="w-full h-full rounded-full overflow-hidden border border-white/10 shadow-2xl relative">
+            {/* Blue Glow around Avatar */}
+            <div className="absolute -inset-4 bg-blue-500/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-700" />
+            <div className="relative w-32 h-32 rounded-full p-[3px] bg-gradient-to-b from-blue-400 to-transparent shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+              <div className="w-full h-full rounded-full overflow-hidden border border-white/20 relative">
                 <Image
                   src={PROFILE.avatar_url}
                   alt={PROFILE.name}
@@ -185,33 +186,36 @@ export default function BioPage() {
               </div>
             </div>
             {/* Verified Badge */}
-            <div className="absolute bottom-2 right-2 bg-blue-500 rounded-full p-1 border-2 border-black shadow-lg">
-              <Zap size={12} fill="white" className="text-white" />
+            <div className="absolute bottom-1 right-1 bg-blue-500 rounded-full p-1.5 border-2 border-[#020205] shadow-lg">
+              <Zap size={10} fill="white" className="text-white" />
             </div>
           </div>
 
           <div className="space-y-3">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400">
               {PROFILE.name}
             </h1>
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
-              <p className="text-zinc-400 font-mono text-[10px] tracking-[0.2em] uppercase">
-                {PROFILE.slug}
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+              <p className="text-blue-400 font-mono text-[10px] tracking-[0.2em] uppercase font-bold">
+                @{PROFILE.slug}
               </p>
             </div>
           </div>
 
           <div className="space-y-2 max-w-sm">
             {PROFILE.bio.split('\n').map((line, i) => (
-              <p key={i} className="text-zinc-400 text-sm font-medium tracking-wide">
+              <p key={i} className="text-zinc-300 text-sm font-medium tracking-wide flex items-center justify-center gap-2">
                 {line}
               </p>
             ))}
           </div>
         </motion.div>
 
-        {/* Links Section */}
-        <div className="w-full space-y-5">
+        {/* Links Section with Card Glow */}
+        <div className="w-full space-y-4 relative">
+          {/* Subtle card container glow */}
+          <div className="absolute -inset-10 bg-blue-600/5 rounded-[3rem] blur-3xl pointer-events-none" />
+          
           {LINKS.map((link, index) => (
             <motion.button
               key={link.id}
@@ -219,22 +223,22 @@ export default function BioPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + (0.1 * index), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => handleLinkClick(link)}
-              className="group relative w-full flex items-center p-1 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl hover:border-white/30 transition-all duration-500 ease-out overflow-hidden shadow-lg hover:shadow-white/5"
+              className="group relative w-full flex items-center p-1 bg-[#10101a]/60 backdrop-blur-3xl border border-white/5 rounded-2xl hover:border-blue-500/50 transition-all duration-500 ease-out overflow-hidden shadow-2xl"
             >
-              <div className="relative z-10 w-full flex items-center justify-between p-4">
+              <div className="relative z-10 w-full flex items-center justify-between p-3">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white bg-gradient-to-br ${link.color} shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                    <link.icon size={22} strokeWidth={1.5} />
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white bg-gradient-to-br ${link.color} shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                    <link.icon size={20} strokeWidth={2} />
                   </div>
-                  <span className="font-semibold text-base tracking-tight text-zinc-200 group-hover:text-white transition-colors">{link.label}</span>
+                  <span className="font-bold text-sm tracking-tight text-zinc-200 group-hover:text-white transition-colors">{link.label}</span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
-                  <ArrowUpRight size={18} className="transition-transform duration-500 group-hover:rotate-45" />
+                <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+                  <ArrowUpRight size={14} className="transition-transform duration-500 group-hover:rotate-45" />
                 </div>
               </div>
               
-              {/* Subtle hover glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/[0.03] to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+              {/* Hover highlight line */}
+              <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-blue-500 group-hover:w-full transition-all duration-700" />
             </motion.button>
           ))}
         </div>
