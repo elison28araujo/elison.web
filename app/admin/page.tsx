@@ -305,7 +305,10 @@ export default function AdminDashboard() {
         setLoading(false);
         return;
       }
-      const { data: { user } } = await supabase.auth.getUser();
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        
         if (user) {
           setUser(user);
           
@@ -344,7 +347,13 @@ export default function AdminDashboard() {
           fetchInitialData(user.id);
           setupRealtime(user.id);
           setLoading(false);
+        } else {
+          router.push('/admin/login');
         }
+      } catch (err) {
+        console.error("Error checking user:", err);
+        router.push('/admin/login');
+      }
     };
 
     const setupRealtime = (userId: string) => {
