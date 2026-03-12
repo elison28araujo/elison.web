@@ -367,7 +367,7 @@ export default function BioPage() {
           <div className="flex flex-col items-center space-y-2">
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
             <p className="text-zinc-700 text-[9px] uppercase tracking-[0.5em] font-mono">
-              {profile.name} Bio Analytics &copy; 2026
+              {profile.name} - desenvolvedor Analytics &copy; 2026
             </p>
           </div>
         </motion.div>
