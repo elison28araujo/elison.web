@@ -8,11 +8,14 @@ import {
   MousePointer2, 
   LogOut,
   RefreshCw,
-  LayoutDashboard,
   Activity,
   Globe,
   Smartphone,
-  Monitor
+  Monitor,
+  ArrowUpRight,
+  Clock,
+  Zap,
+  MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -29,6 +32,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [activities, setActivities] = useState<ActivityEvent[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleTimeString());
   const [stats, setStats] = useState({
     totalVisits: 0,
     totalClicks: 0,
@@ -38,6 +42,7 @@ export default function AdminDashboard() {
 
   const addActivity = (event: ActivityEvent) => {
     setActivities(prev => [event, ...prev].slice(0, 10));
+    setLastUpdated(new Date().toLocaleTimeString());
   };
 
   const parseUserAgent = (ua?: string) => {
@@ -179,107 +184,208 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8f8f8] flex items-center justify-center">
-        <RefreshCw className="animate-spin text-zinc-400" size={32} />
+      <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-center space-y-4">
+        <div className="relative">
+          <RefreshCw className="animate-spin text-zinc-900" size={40} strokeWidth={1} />
+          <div className="absolute inset-0 blur-xl bg-zinc-400/20 animate-pulse"></div>
+        </div>
+        <p className="text-xs font-mono uppercase tracking-[0.3em] text-zinc-400">Iniciando Dashboard</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 font-sans p-8 md:p-12">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Left Column: Info & Stats */}
-          <div className="lg:col-span-4 space-y-12">
-            <header>
-              <h1 className="text-4xl font-black tracking-tighter mb-2">Elison Bio Analytics</h1>
+    <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white">
+      {/* Top Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-100 px-8 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center text-white">
+              <Zap size={16} fill="currentColor" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-tight">Elison Bio Analytics</h1>
               <div className="flex items-center space-x-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Monitoramento em Tempo Real</p>
+                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-widest">Live System</p>
               </div>
-            </header>
-
-            <button 
-              onClick={handleLogout}
-              className="w-12 h-12 border border-zinc-200 rounded-xl flex items-center justify-center hover:bg-zinc-50 transition-colors text-zinc-400 hover:text-red-600"
-            >
-              <LogOut size={20} />
-            </button>
-
-            <div className="space-y-10">
-              {[
-                { label: 'Visitas Totais', value: stats.totalVisits, icon: Users, color: 'text-blue-600' },
-                { label: 'Cliques Totais', value: stats.totalClicks, icon: MousePointer2, color: 'text-emerald-600' },
-                { label: 'Usuários Online', value: stats.liveUsers, icon: Globe, color: 'text-orange-600' },
-              ].map((item, i) => (
-                <div key={i} className="flex flex-col items-start">
-                  <div className={`${item.color} mb-3`}>
-                    <item.icon size={32} strokeWidth={1.5} />
-                  </div>
-                  <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest mb-1">{item.label}</p>
-                  <h3 className="text-5xl font-black tracking-tighter">{item.value}</h3>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Right Column: Live Visualization Placeholder */}
-          <div className="lg:col-span-8">
-            <div className="w-full aspect-video md:aspect-square lg:aspect-auto lg:h-full border-2 border-blue-500 rounded-lg flex items-center justify-center bg-blue-50/10">
-              <div className="text-blue-500 font-mono text-xs uppercase tracking-widest animate-pulse">
-                Live Visualization Area
+          <div className="flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-2 text-zinc-400">
+              <Clock size={12} />
+              <span className="text-[10px] font-mono uppercase tracking-wider">Último sinal: {lastUpdated}</span>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="group flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-red-600 transition-colors"
+            >
+              <span>Sair</span>
+              <LogOut size={14} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto p-8 md:p-12 space-y-12">
+        {/* Hero Section */}
+        <section className="space-y-2">
+          <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+            Visão Geral <br />
+            <span className="text-zinc-300">do seu Tráfego.</span>
+          </h2>
+        </section>
+
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {/* Main Stat: Live Users */}
+          <div className="md:col-span-2 lg:col-span-2 bg-zinc-900 text-white p-8 rounded-[2rem] flex flex-col justify-between relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Globe size={120} strokeWidth={1} />
+            </div>
+            <div className="relative z-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-1">Online Agora</p>
+              <h3 className="text-7xl font-black tracking-tighter">{stats.liveUsers}</h3>
+            </div>
+            <div className="relative z-10 flex items-center space-x-2 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Usuários Ativos</span>
+            </div>
+          </div>
+
+          {/* Stat: Total Visits */}
+          <div className="md:col-span-2 lg:col-span-2 bg-white border border-zinc-100 p-8 rounded-[2rem] flex flex-col justify-between hover:border-zinc-200 transition-colors">
+            <div>
+              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                <Users size={20} />
               </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-1">Visitas Totais</p>
+              <h3 className="text-5xl font-black tracking-tighter">{stats.totalVisits}</h3>
+            </div>
+            <div className="mt-4 flex items-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              <RefreshCw size={10} className="mr-2" />
+              <span>Sincronizado</span>
+            </div>
+          </div>
+
+          {/* Stat: Total Clicks */}
+          <div className="md:col-span-2 lg:col-span-2 bg-white border border-zinc-100 p-8 rounded-[2rem] flex flex-col justify-between hover:border-zinc-200 transition-colors">
+            <div>
+              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-6">
+                <MousePointer2 size={20} />
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-1">Cliques Totais</p>
+              <h3 className="text-5xl font-black tracking-tighter">{stats.totalClicks}</h3>
+            </div>
+            <div className="mt-4 flex items-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              <ArrowUpRight size={10} className="mr-2" />
+              <span>Taxa de Conversão</span>
+            </div>
+          </div>
+
+          {/* Visualization Area (Placeholder for Map/Chart) */}
+          <div className="md:col-span-4 lg:col-span-4 bg-zinc-100/50 border border-zinc-100 rounded-[2rem] relative overflow-hidden min-h-[300px] group">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto text-zinc-300 group-hover:text-zinc-900 transition-colors">
+                  <MapPin size={24} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Distribuição Geográfica</p>
+              </div>
+            </div>
+            {/* Decorative Grid */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+          </div>
+
+          {/* Quick Actions / Info */}
+          <div className="md:col-span-2 lg:col-span-2 bg-white border border-zinc-100 p-8 rounded-[2rem] space-y-6">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Configurações Rápidas</h4>
+            <div className="space-y-3">
+              <button className="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 rounded-xl text-xs font-bold text-zinc-600 transition-colors flex items-center justify-between">
+                <span>Editar Perfil</span>
+                <ArrowUpRight size={14} />
+              </button>
+              <button className="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 rounded-xl text-xs font-bold text-zinc-600 transition-colors flex items-center justify-between">
+                <span>Gerenciar Links</span>
+                <ArrowUpRight size={14} />
+              </button>
+              <button className="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 rounded-xl text-xs font-bold text-zinc-600 transition-colors flex items-center justify-between">
+                <span>Exportar Dados</span>
+                <ArrowUpRight size={14} />
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section: Activity Feed */}
-        <div className="mt-24 space-y-8">
-          <div className="border-t border-zinc-100 pt-12">
-            <h2 className="text-2xl font-black tracking-tighter mb-1">Fluxo de Atividade</h2>
-            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Live Feed</p>
+        {/* Activity Feed Section */}
+        <section className="space-y-8 pt-12">
+          <div className="flex items-end justify-between border-b border-zinc-100 pb-6">
+            <div>
+              <h3 className="text-3xl font-black tracking-tighter">Atividade Recente</h3>
+              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mt-1">Eventos em Tempo Real</p>
+            </div>
+            <div className="hidden md:block">
+              <div className="px-4 py-2 bg-zinc-900 text-white rounded-full text-[10px] font-bold uppercase tracking-widest">
+                Live Feed
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <AnimatePresence initial={false}>
               {activities.length > 0 ? (
                 activities.map((event) => (
                   <motion.div 
                     key={event.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 border border-zinc-100 rounded-2xl flex items-center justify-between hover:border-zinc-200 transition-colors"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="group p-6 bg-white border border-zinc-100 rounded-3xl flex items-center justify-between hover:border-zinc-900 transition-all duration-500"
                   >
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${event.type === 'Visita' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                        {event.type === 'Visita' ? <Users size={16} /> : <MousePointer2 size={16} />}
+                    <div className="flex items-center space-x-5">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${
+                        event.type === 'Visita' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
+                      }`}>
+                        {event.type === 'Visita' ? <Users size={20} /> : <MousePointer2 size={20} />}
                       </div>
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-bold text-sm tracking-tight">{event.type}</span>
-                          <span className="text-zinc-300">•</span>
-                          <span className="text-xs text-zinc-500">{event.target}</span>
+                          <span className="font-black text-sm uppercase tracking-tight">{event.type}</span>
+                          <span className="w-1 h-1 rounded-full bg-zinc-200"></span>
+                          <span className="text-xs text-zinc-400 font-medium truncate max-w-[150px]">{event.target}</span>
                         </div>
-                        <span className="text-[10px] text-zinc-400 font-mono">{event.time}</span>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Clock size={10} className="text-zinc-300" />
+                          <span className="text-[10px] text-zinc-400 font-mono">{event.time}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2 text-zinc-300">
-                      {event.device === 'Mobile' ? <Smartphone size={14} /> : <Monitor size={14} />}
+                    
+                    <div className="flex flex-col items-end space-y-1">
+                      <div className="flex items-center space-x-2 text-zinc-300 group-hover:text-zinc-900 transition-colors">
+                        {event.device === 'Mobile' ? <Smartphone size={14} /> : <Monitor size={14} />}
+                        <span className="text-[10px] font-black uppercase tracking-widest">{event.device}</span>
+                      </div>
                     </div>
                   </motion.div>
                 ))
               ) : (
-                <div className="col-span-full py-20 text-center border-2 border-dashed border-zinc-100 rounded-3xl">
-                  <p className="text-sm text-zinc-400 font-medium">Aguardando atividade...</p>
+                <div className="col-span-full py-32 flex flex-col items-center justify-center border-2 border-dashed border-zinc-100 rounded-[3rem] bg-zinc-50/50">
+                  <Activity className="text-zinc-200 mb-4 animate-pulse" size={48} strokeWidth={1} />
+                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Aguardando novos sinais...</p>
                 </div>
               )}
             </AnimatePresence>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="max-w-7xl mx-auto p-12 border-t border-zinc-100 text-center">
+        <p className="text-[10px] font-bold text-zinc-300 uppercase tracking-[0.5em]">
+          Elison Bio Analytics &copy; 2026 • Powered by Real-time Engine
+        </p>
+      </footer>
     </div>
   );
 }
