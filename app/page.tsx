@@ -15,14 +15,36 @@ import {
 } from 'lucide-react';
 
 const PROFILE = {
-  id: null, // No longer using a non-UUID placeholder
+  id: null,
   name: 'Elison Araújo',
   slug: 'elisons.araujo',
   bio: '💻 Criação de Sites Profissionais\n🚀 Link profissional para Instagram\n⚙️ Sistemas e automações para empresas',
   avatar_url: 'https://picsum.photos/seed/elison-premium/400/400',
-  background_url: 'https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?q=80&w=1920&auto=format&fit=crop',
   instagram: 'https://www.instagram.com/elisons.araujo',
 };
+
+const BACKGROUNDS = [
+  {
+    url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop',
+    label: 'Academia'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1493863641943-9b68992a8d07?q=80&w=1920&auto=format&fit=crop',
+    label: 'Fotógrafo'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1920&auto=format&fit=crop',
+    label: 'Advocacia'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1920&auto=format&fit=crop',
+    label: 'Estética'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=1920&auto=format&fit=crop',
+    label: 'Loja Online'
+  }
+];
 
 const LINKS = [
   {
@@ -64,9 +86,19 @@ const LINKS = [
 
 import { supabase } from '@/lib/supabase';
 import { Zap } from 'lucide-react';
+import { AnimatePresence } from 'motion/react';
 
 export default function BioPage() {
   const [profileId, setProfileId] = useState<string | null>(null);
+  const [bgIndex, setBgIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % BACKGROUNDS.length);
+    }, 5000); // Change background every 5 seconds
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const initPage = async () => {
@@ -147,20 +179,44 @@ export default function BioPage() {
 
   return (
     <main className="min-h-screen bg-[#020205] text-white selection:bg-blue-500 selection:text-white font-sans overflow-x-hidden relative">
-      {/* Background with immersive tech feel */}
+      {/* Background Slider with immersive tech feel */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#020205]/90 via-[#020205]/40 to-[#020205] z-10" />
-        <Image
-          src={PROFILE.background_url}
-          alt="Background"
-          fill
-          className="object-cover opacity-30 scale-105"
-          priority
-          referrerPolicy="no-referrer"
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020205]/80 via-transparent to-[#020205]/90 z-20" />
+        
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={bgIndex}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 0.5, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={BACKGROUNDS[bgIndex].url}
+              alt={BACKGROUNDS[bgIndex].label}
+              fill
+              className="object-cover"
+              priority
+              referrerPolicy="no-referrer"
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Theme Label */}
+        <div className="absolute bottom-10 left-10 z-30">
+          <motion.p 
+            key={bgIndex}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 0.4, x: 0 }}
+            className="text-[10px] font-mono uppercase tracking-[0.5em] text-white"
+          >
+            Tema: {BACKGROUNDS[bgIndex].label}
+          </motion.p>
+        </div>
+
         {/* Immersive Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse z-10" />
       </div>
 
       <div className="relative z-10 max-w-xl mx-auto px-6 pt-20 pb-24 flex flex-col items-center">
