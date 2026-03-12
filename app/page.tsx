@@ -54,18 +54,66 @@ const LINKS = [
   },
 ];
 
+import { supabase } from '@/lib/supabase';
+
 export default function BioPage() {
+  const [profileId, setProfileId] = useState<string | null>(null);
+
   useEffect(() => {
-    // Track visit
-    fetch('/api/track/visit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        profile_id: PROFILE.id,
-        referrer: document.referrer,
-        user_agent: navigator.userAgent,
-      }),
-    }).catch(console.error);
+    const initPage = async () => {
+      if (!supabase) return;
+
+      // 1. Fetch real profile ID from DB using slug
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('slug', PROFILE.slug)
+        .single();
+
+      const realId = profile?.id;
+      setProfileId(realId);
+
+      // 2. Track visit with real UUID if found
+      if (realId) {
+        fetch('/api/track/visit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            profile_id: realId,
+            referrer: document.referrer,
+            user_agent: navigator.userAgent,
+          }),
+        }).catch(console.error);
+      }
+
+      // 3. Setup Presence
+      const channel = supabase.channel('online-users', {
+        config: {
+          presence: {
+            key: realId || PROFILE.slug,
+          },
+        },
+      });
+      
+      channel
+        .on('presence', { event: 'sync' }, () => {
+          // No action needed on client side for sync
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await channel.track({
+              online_at: new Date().toISOString(),
+              device: /iPhone|Android/.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
+            });
+          }
+        });
+
+      return () => {
+        channel.unsubscribe();
+      };
+    };
+
+    initPage();
   }, []);
 
   const handleLinkClick = async (link: typeof LINKS[0]) => {
@@ -75,7 +123,7 @@ export default function BioPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profile_id: PROFILE.id,
+          profile_id: profileId,
           link_id: link.id,
           referrer: document.referrer,
           user_agent: navigator.userAgent,
