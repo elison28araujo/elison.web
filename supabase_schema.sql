@@ -61,6 +61,7 @@ ALTER TABLE public.clicks ENABLE ROW LEVEL SECURITY;
 -- Policies
 -- Profiles: Users can read any profile, but only update their own
 CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 
 -- Links: Everyone can view active links, only owners can manage

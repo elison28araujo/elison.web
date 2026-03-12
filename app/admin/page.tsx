@@ -62,29 +62,50 @@ export default function AdminDashboard() {
         router.push('/admin/login');
       } else {
         setUser(user);
-        fetchInitialData();
-        setupRealtime();
+        // Ensure profile exists
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile) {
+          await supabase.from('profiles').insert([
+            {
+              id: user.id,
+              name: 'Elison Araújo',
+              slug: 'elisons.araujo',
+              bio: '💻 Criação de Sites Profissionais\n🚀 Link profissional para Instagram\n⚙️ Sistemas e automações para empresas',
+            }
+          ]);
+        }
+
+        fetchInitialData(user.id);
+        setupRealtime(user.id);
         setLoading(false);
       }
     };
 
-    const fetchInitialData = async () => {
+    const fetchInitialData = async (userId: string) => {
       if (!supabase) return;
 
-      // Fetch total visits
+      // Fetch total visits for this profile
       const { count: visitCount } = await supabase
         .from('visits')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .eq('profile_id', userId);
 
-      // Fetch total clicks
+      // Fetch total clicks for this profile
       const { count: clickCount } = await supabase
         .from('clicks')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .eq('profile_id', userId);
 
       // Fetch recent visits
       const { data: recentVisits } = await supabase
         .from('visits')
         .select('*')
+        .eq('profile_id', userId)
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -92,6 +113,7 @@ export default function AdminDashboard() {
       const { data: recentClicks } = await supabase
         .from('clicks')
         .select('*')
+        .eq('profile_id', userId)
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -122,13 +144,18 @@ export default function AdminDashboard() {
       setActivities(initialActivities);
     };
 
-    const setupRealtime = () => {
+    const setupRealtime = (userId: string) => {
       if (!supabase) return;
 
       // Stats and Activity Feed
       const statsChannel = supabase
         .channel('realtime-stats')
-        .on('postgres_changes', { event: 'INSERT', table: 'visits', schema: 'public' }, (payload) => {
+        .on('postgres_changes', { 
+          event: 'INSERT', 
+          table: 'visits', 
+          schema: 'public',
+          filter: `profile_id=eq.${userId}`
+        }, (payload) => {
           const newVisit = payload.new;
           setStats(prev => ({ ...prev, totalVisits: prev.totalVisits + 1 }));
           addActivity({
@@ -140,7 +167,12 @@ export default function AdminDashboard() {
             timestamp: Date.now()
           });
         })
-        .on('postgres_changes', { event: 'INSERT', table: 'clicks', schema: 'public' }, (payload) => {
+        .on('postgres_changes', { 
+          event: 'INSERT', 
+          table: 'clicks', 
+          schema: 'public',
+          filter: `profile_id=eq.${userId}`
+        }, (payload) => {
           const newClick = payload.new;
           setStats(prev => ({ ...prev, totalClicks: prev.totalClicks + 1 }));
           addActivity({
@@ -155,13 +187,15 @@ export default function AdminDashboard() {
         .subscribe();
 
       // Presence for Online Users
-      const presenceChannel = supabase.channel('online-users');
+      const presenceChannel = supabase.channel('online-users', {
+        config: { presence: { key: userId } }
+      });
       
       presenceChannel
         .on('presence', { event: 'sync' }, () => {
           const state = presenceChannel.presenceState();
-          // Count total presence entries across all keys
-          const count = Object.values(state).flat().length;
+          // Count total presence entries for THIS profile
+          const count = state[userId]?.length || 0;
           setStats(prev => ({ ...prev, liveUsers: count }));
         })
         .subscribe();
